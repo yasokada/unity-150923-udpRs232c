@@ -298,6 +298,46 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 184811420}
+--- !u!1 &214565760
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 214565762}
+  - 114: {fileID: 214565761}
+  m_Layer: 0
+  m_Name: InputFieldControl
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &214565761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 214565760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b41d19c89118541a385aca0d0c6ae158, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IF_ipadr1: {fileID: 1258898212}
+--- !u!4 &214565762
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 214565760}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 429.799988, y: 309.299988, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
 --- !u!1 &234688640
 GameObject:
   m_ObjectHideFlags: 0
@@ -858,7 +898,6 @@ GameObject:
   - 222: {fileID: 1258898214}
   - 114: {fileID: 1258898213}
   - 114: {fileID: 1258898212}
-  - 114: {fileID: 1258898215}
   m_Layer: 5
   m_Name: IF_ipadr1
   m_TagString: Untagged
@@ -934,8 +973,8 @@ MonoBehaviour:
   m_EndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1258898215}
-        m_MethodName: OnChangeIpadr1
+      - m_Target: {fileID: 214565761}
+        m_MethodName: OnEndEditIpadr1
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -982,18 +1021,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1258898210}
---- !u!114 &1258898215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1258898210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b41d19c89118541a385aca0d0c6ae158, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IF_ipadr1: {fileID: 1258898212}
 --- !u!1 &1292823886
 GameObject:
   m_ObjectHideFlags: 0

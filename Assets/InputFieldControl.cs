@@ -13,8 +13,8 @@ public class InputFieldControl : MonoBehaviour {
 	void Update () {
 	
 	}
-
-	public void OnChangeIpadr1() {
+	
+	public void OnEndEditIpadr1() {
 		SettingKeeperControl.setIpadr1 (IF_ipadr1.text);
 	}
 }
