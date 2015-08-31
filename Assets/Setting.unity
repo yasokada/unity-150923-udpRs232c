@@ -858,6 +858,7 @@ GameObject:
   - 222: {fileID: 1258898214}
   - 114: {fileID: 1258898213}
   - 114: {fileID: 1258898212}
+  - 114: {fileID: 1258898215}
   m_Layer: 5
   m_Name: IF_ipadr1
   m_TagString: Untagged
@@ -932,7 +933,18 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_EndEdit:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1258898215}
+        m_MethodName: OnChangeIpadr1
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.InputField+SubmitEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
   m_OnValueChange:
@@ -970,6 +982,18 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1258898210}
+--- !u!114 &1258898215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1258898210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b41d19c89118541a385aca0d0c6ae158, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IF_ipadr1: {fileID: 1258898212}
 --- !u!1 &1292823886
 GameObject:
   m_ObjectHideFlags: 0
