@@ -29,6 +29,9 @@ public class SettingKeeperControl : MonoBehaviour {
 	{
 		str_ipadr2 = ipadr;
 	}
+	public static void setPort(int port_) {
+		port = port_;
+	}
 
 	void loadOldSetting()
 	{
