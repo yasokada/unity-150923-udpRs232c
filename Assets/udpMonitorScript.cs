@@ -35,8 +35,16 @@ public class udpMonitorScript : MonoBehaviour {
 				byte[] data = client.Receive(ref anyIP);
 				string text = Encoding.ASCII.GetString(data);
 
-				if (text.Length > 0) {
-					client.Send(data, data.Length, anyIP); // echo
+				if (text.Length == 0) {
+					Thread.Sleep(20);
+					continue;
+				}
+				string fromIP = anyIP.Address.ToString();
+				// send to the other
+				if (fromIP.Equals(ipadr1)) {
+					client.Send(data, data.Length, ipadr2, port);
+				} else {
+					client.Send(data, data.Length, ipadr1, port);
 				}
 			}
 			catch (Exception err) {
