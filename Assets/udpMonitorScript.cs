@@ -31,7 +31,13 @@ public class udpMonitorScript : MonoBehaviour {
 
 		while (ToggleComm.isOn) {
 			try {
+				IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
+				byte[] data = client.Receive(ref anyIP);
+				string text = Encoding.ASCII.GetString(data);
 
+				if (text.Length > 0) {
+					client.Send(data, data.Length, anyIP); // echo
+				}
 			}
 			catch (Exception err) {
 
