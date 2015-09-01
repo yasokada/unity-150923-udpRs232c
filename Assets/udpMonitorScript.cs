@@ -43,15 +43,19 @@ public class udpMonitorScript : MonoBehaviour {
 				// send to the other
 				if (fromIP.Equals(ipadr1)) {
 					client.Send(data, data.Length, ipadr2, port);
+					Debug.Log("from: " + ipadr1 + " to " + ipadr2);
+					Debug.Log(data.Length.ToString());
 				} else {
 					client.Send(data, data.Length, ipadr1, port);
+					Debug.Log("from: " + ipadr2 + " to " + ipadr1);
+					Debug.Log(data.Length.ToString());
 				}
 			}
 			catch (Exception err) {
 
 			}
 			// without this sleep, on android, the app will freeze at Unity splash screen
-			Thread.Sleep(20);
+			Thread.Sleep(200);
 		}
 		client.Close ();
 	}
