@@ -9,20 +9,31 @@ public class udpMonitorScript : MonoBehaviour {
 
 	public Toggle ToggleComm;
 
+	private string ipadr1;
+	private string ipadr2;
+	private int port;
+
 	void Start () {
+		ToggleComm.isOn = false; // false at first
+
 		monThr = new Thread (new ThreadStart (FuncMonData));
 		monThr.Start ();
 	}
-
-	void Update () {	
-	}
-
+	
 	void Monitor() {
 		Debug.Log ("start monitor");
 		while (ToggleComm.isOn) {
 			Thread.Sleep(100);
 		}
 		Debug.Log ("end monitor");
+	}
+
+	private bool readSetting() {
+		// TODO: return false if reading fails
+		ipadr1 = SettingKeeperControl.str_ipadr1;
+		ipadr2 = SettingKeeperControl.str_ipadr2;
+		port = SettingKeeperControl.port;
+		return true;
 	}
 
 	private void FuncMonData() 
@@ -33,6 +44,7 @@ public class udpMonitorScript : MonoBehaviour {
 				Thread.Sleep(100);
 				continue;
 			}
+			readSetting();
 			Monitor();
 		}
 	}
