@@ -9,7 +9,8 @@ using System.Net.Sockets;
 using System.Threading;
 
 public class udpMonitorScript : MonoBehaviour {
-	Thread monThr; // monitor Thread
+ 	Thread monThr = null; // monitor Thread
+	static bool created = false;
 
 	public Toggle ToggleComm;
 
@@ -18,10 +19,15 @@ public class udpMonitorScript : MonoBehaviour {
 	private int port;
 
 	void Start () {
-		ToggleComm.isOn = false; // false at first
-
-		monThr = new Thread (new ThreadStart (FuncMonData));
-		monThr.Start ();
+		if (!created) {
+			DontDestroyOnLoad (this);
+			created = true;
+			ToggleComm.isOn = false; // false at first
+			monThr = new Thread (new ThreadStart (FuncMonData));
+			monThr.Start ();
+		} else {
+			Destroy(this);
+		}
 	}
 	
 	void Monitor() {
@@ -76,7 +82,9 @@ public class udpMonitorScript : MonoBehaviour {
 				Thread.Sleep(100);
 				continue;
 			}
+			Debug.Log("read setting");
 			readSetting();
+			Debug.Log("monitor");
 			Monitor();
 		}
 	}
