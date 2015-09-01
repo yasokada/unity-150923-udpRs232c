@@ -2,6 +2,10 @@
 using System.Collections;
 using UnityEngine.UI;
 
+using System;
+using System.Text;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 
 public class udpMonitorScript : MonoBehaviour {
@@ -21,11 +25,21 @@ public class udpMonitorScript : MonoBehaviour {
 	}
 	
 	void Monitor() {
-		Debug.Log ("start monitor");
+		UdpClient client = new UdpClient (port);
+		client.Client.ReceiveTimeout = 300; // msec
+		client.Client.Blocking = false;
+
 		while (ToggleComm.isOn) {
-			Thread.Sleep(100);
+			try {
+
+			}
+			catch (Exception err) {
+
+			}
+			// without this sleep, on android, the app will freeze at Unity splash screen
+			Thread.Sleep(20);
 		}
-		Debug.Log ("end monitor");
+		client.Close ();
 	}
 
 	private bool readSetting() {
