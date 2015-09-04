@@ -23,7 +23,7 @@ public class udpMonitorScript : MonoBehaviour {
 
 	private string ipadr1;
 	private string ipadr2;
-	private int port;
+	private int setPort;
 
 	void Start () {
 		if (!created) {
@@ -48,7 +48,7 @@ public class udpMonitorScript : MonoBehaviour {
 	}
 
 	void Monitor() {
-		UdpClient client = new UdpClient (port);
+		UdpClient client = new UdpClient (setPort);
 		client.Client.ReceiveTimeout = 300; // msec
 		client.Client.Blocking = false;
 
@@ -69,8 +69,8 @@ public class udpMonitorScript : MonoBehaviour {
 				// send to the other
 				if (fromIP.Equals(ipadr1)) {
 					portToReturn = fromPort; // store the port 
-					client.Send(data, data.Length, ipadr2, port);
-					DebugPrintComm("1 ", fromIP, fromPort, ipadr2, port);
+					client.Send(data, data.Length, ipadr2, setPort);
+					DebugPrintComm("1 ", fromIP, fromPort, ipadr2, setPort);
 				} else {
 					client.Send(data, data.Length, ipadr1, portToReturn);
 					DebugPrintComm("2 ", fromIP, fromPort, ipadr1, portToReturn);
@@ -89,7 +89,7 @@ public class udpMonitorScript : MonoBehaviour {
 		// TODO: return false if reading fails
 		ipadr1 = SettingKeeperControl.str_ipadr1;
 		ipadr2 = SettingKeeperControl.str_ipadr2;
-		port = SettingKeeperControl.port;
+		setPort = SettingKeeperControl.port;
 		return true;
 	}
 
