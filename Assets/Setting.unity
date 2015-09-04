@@ -146,7 +146,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: IP adr2
+  m_Text: (out) IP adr2
 --- !u!222 &29606836
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -798,7 +798,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: IP adr1
+  m_Text: (in) IP adr1
 --- !u!222 &738684622
 CanvasRenderer:
   m_ObjectHideFlags: 0
