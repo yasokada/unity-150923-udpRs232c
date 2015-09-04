@@ -356,7 +356,7 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
-  m_AnchoredPosition: {x: -3.9000001, y: 83.6999969}
+  m_AnchoredPosition: {x: -104.699997, y: 89.9000015}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: .5, y: .5}
 --- !u!114 &1195844539
@@ -621,7 +621,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
-  m_AnchoredPosition: {x: -110.599998, y: 128.699997}
+  m_AnchoredPosition: {x: -110.599998, y: 135.800003}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: .5, y: .5}
 --- !u!114 &1697522792
@@ -847,7 +847,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ToggleComm
+  m_Text: 'ToggleComm
+
+'
 --- !u!222 &2012443997
 CanvasRenderer:
   m_ObjectHideFlags: 0

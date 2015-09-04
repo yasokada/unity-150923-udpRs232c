@@ -68,7 +68,7 @@ public class udpMonitorScript : MonoBehaviour {
 
 				// send to the other
 				if (fromIP.Equals(ipadr1)) {
-					portToReturn = fromPort; // store the port
+					portToReturn = fromPort; // store the port used in the "else" clause
 					client.Send(data, data.Length, ipadr2, setPort);
 					DebugPrintComm("1 ", fromIP, fromPort, ipadr2, setPort);
 				} else {
