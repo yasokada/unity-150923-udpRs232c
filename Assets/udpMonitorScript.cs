@@ -44,6 +44,7 @@ public class udpMonitorScript : MonoBehaviour {
 		string msg;
 		msg = prefix + "from:" + fromIP + "(" + fromPort.ToString ()
 			+ ") to " + toIP + "(" + toPort.ToString() + ")"; 
+		Debug.Log (msg);
 	}
 
 	void Monitor() {
@@ -63,19 +64,16 @@ public class udpMonitorScript : MonoBehaviour {
 					continue;
 				}
 				string fromIP = anyIP.Address.ToString();
-				string fromPort = anyIP.Port.ToString();
+				int fromPort = anyIP.Port;
 
 				// send to the other
 				if (fromIP.Equals(ipadr1)) {
-					portToReturn = Convert.ToInt32 (fromPort); // store the port 
+					portToReturn = fromPort; // store the port 
 					client.Send(data, data.Length, ipadr2, port);
-					DebugPrintComm("1 ", fromIP, portToReturn, ipadr2, port);
+					DebugPrintComm("1 ", fromIP, fromPort, ipadr2, port);
 				} else {
-					int toPort = Convert.ToInt32(portToReturn);
-					client.Send(data, data.Length, ipadr1, toPort);
-
-					Debug.Log("2 from: " + fromIP + "(" + "..." 
-					          + ") to " + ipadr1 + "(" + portToReturn + ")");
+					client.Send(data, data.Length, ipadr1, portToReturn);
+					DebugPrintComm("2 ", fromIP, fromPort, ipadr1, portToReturn);
 				}
 			}
 			catch (Exception err) {
