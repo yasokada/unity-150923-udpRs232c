@@ -8,7 +8,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-/*
+/* v0.3 2015/09/04
+ *   - add UI > Label @ Setting Scene
+ *   - rename Monitor() to DoRelay()
  * v0.2 2015/09/04
  *   - refactor
  * v0.1 2015/09/04
@@ -47,7 +49,7 @@ public class udpMonitorScript : MonoBehaviour {
 		Debug.Log (msg);
 	}
 
-	void Monitor() {
+	void DoRelay() {
 		UdpClient client = new UdpClient (setPort);
 		client.Client.ReceiveTimeout = 300; // msec
 		client.Client.Blocking = false;
@@ -104,7 +106,7 @@ public class udpMonitorScript : MonoBehaviour {
 			Debug.Log("read setting");
 			readSetting();
 			Debug.Log("monitor");
-			Monitor();
+			DoRelay();
 		}
 	}
 
