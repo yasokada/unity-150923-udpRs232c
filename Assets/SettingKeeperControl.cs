@@ -35,6 +35,9 @@ public class SettingKeeperControl : MonoBehaviour {
 	public static void setPort(int port_) {
 		port = port_;
 	}
+	public static void setDelay(int delay_) {
+		delay_msec = delay_;
+	}
 
 	void loadOldSetting()
 	{

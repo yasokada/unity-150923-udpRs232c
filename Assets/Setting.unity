@@ -394,6 +394,7 @@ MonoBehaviour:
   IF_ipadr1: {fileID: 1258898212}
   IF_ipadr2: {fileID: 1373033337}
   IF_port: {fileID: 885694687}
+  IF_delay: {fileID: 606671973}
 --- !u!4 &214565762
 Transform:
   m_ObjectHideFlags: 0
@@ -752,7 +753,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 214565761}
-        m_MethodName: OnEndEditPort
+        m_MethodName: OnEndEditDelay
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
