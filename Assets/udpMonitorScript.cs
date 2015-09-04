@@ -8,6 +8,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
+/*
+ * v0.2 2015/09/04
+ *   - 
+ * v0.1 2015/09/04
+ *   - fix UDP relay
+ */ 
+
 public class udpMonitorScript : MonoBehaviour {
  	Thread monThr = null; // monitor Thread
 	static bool created = false;
@@ -31,13 +38,20 @@ public class udpMonitorScript : MonoBehaviour {
 			Destroy(ToggleComm.gameObject.transform.parent.gameObject);
 		}
 	}
-	
+
+	void DebugPrintComm(string prefix, string fromIP, int fromPort, string toIP, int toPort)
+	{
+		string msg;
+		msg = prefix + "from:" + fromIP + "(" + fromPort.ToString ()
+			+ ") to " + toIP + "(" + toPort.ToString() + ")"; 
+	}
+
 	void Monitor() {
 		UdpClient client = new UdpClient (port);
 		client.Client.ReceiveTimeout = 300; // msec
 		client.Client.Blocking = false;
 
-		string fromPort = "6000"; // at first 6000 is set as dummy
+		int portToReturn = 31415; // is set dummy value at first
 		while (ToggleComm.isOn) {
 			try {
 				IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
@@ -49,17 +63,19 @@ public class udpMonitorScript : MonoBehaviour {
 					continue;
 				}
 				string fromIP = anyIP.Address.ToString();
+				string fromPort = anyIP.Port.ToString();
+
 				// send to the other
 				if (fromIP.Equals(ipadr1)) {
-					fromPort = anyIP.Port.ToString(); // store the port 
+					portToReturn = Convert.ToInt32 (fromPort); // store the port 
 					client.Send(data, data.Length, ipadr2, port);
-					Debug.Log("1 from: " + fromIP + "(" + fromPort
-					          + ") to " + ipadr2 + "(" + port.ToString() + ")");
+					DebugPrintComm("1 ", fromIP, portToReturn, ipadr2, port);
 				} else {
-					client.Send(data, data.Length, ipadr1, Convert.ToInt32(fromPort));
+					int toPort = Convert.ToInt32(portToReturn);
+					client.Send(data, data.Length, ipadr1, toPort);
 
 					Debug.Log("2 from: " + fromIP + "(" + "..." 
-					          + ") to " + ipadr1 + "(" + fromPort + ")");
+					          + ") to " + ipadr1 + "(" + portToReturn + ")");
 				}
 			}
 			catch (Exception err) {
