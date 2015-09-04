@@ -37,7 +37,7 @@ public class udpMonitorScript : MonoBehaviour {
 		client.Client.ReceiveTimeout = 300; // msec
 		client.Client.Blocking = false;
 
-		string fromPort = "6000";
+		string fromPort = "6000"; // at first 6000 is set as dummy
 		while (ToggleComm.isOn) {
 			try {
 				IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
@@ -51,12 +51,11 @@ public class udpMonitorScript : MonoBehaviour {
 				string fromIP = anyIP.Address.ToString();
 				// send to the other
 				if (fromIP.Equals(ipadr1)) {
-					fromPort = anyIP.Port.ToString();
+					fromPort = anyIP.Port.ToString(); // store the port 
 					client.Send(data, data.Length, ipadr2, port);
 					Debug.Log("1 from: " + fromIP + "(" + fromPort
 					          + ") to " + ipadr2 + "(" + port.ToString() + ")");
 				} else {
-//					client.Send(data, data.Length, ipadr1, port);
 					client.Send(data, data.Length, ipadr1, Convert.ToInt32(fromPort));
 
 					Debug.Log("2 from: " + fromIP + "(" + "..." 
