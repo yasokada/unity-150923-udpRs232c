@@ -8,7 +8,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-/* v0.3 2015/09/04
+
+/* 
+ * v0.4 2015/09/05
+ *   - add delay feature
+ * v0.3 2015/09/04
  *   - add UI > Label @ Setting Scene
  *   - rename Monitor() to DoRelay()
  * v0.2 2015/09/04
@@ -26,6 +30,7 @@ public class udpMonitorScript : MonoBehaviour {
 	private string ipadr1;
 	private string ipadr2;
 	private int setPort;
+	private int delay_msec;
 
 	void Start () {
 		if (!created) {
@@ -74,6 +79,9 @@ public class udpMonitorScript : MonoBehaviour {
 					client.Send(data, data.Length, ipadr2, setPort);
 					DebugPrintComm("1 ", fromIP, fromPort, ipadr2, setPort);
 				} else {
+					// delay before relay 
+					Thread.Sleep(delay_msec);
+
 					client.Send(data, data.Length, ipadr1, portToReturn);
 					DebugPrintComm("2 ", fromIP, fromPort, ipadr1, portToReturn);
 				}
@@ -92,6 +100,7 @@ public class udpMonitorScript : MonoBehaviour {
 		ipadr1 = SettingKeeperControl.str_ipadr1;
 		ipadr2 = SettingKeeperControl.str_ipadr2;
 		setPort = SettingKeeperControl.port;
+		delay_msec = SettingKeeperControl.delay_msec;
 		return true;
 	}
 
