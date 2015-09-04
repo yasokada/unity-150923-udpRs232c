@@ -20,13 +20,15 @@ public class udpMonitorScript : MonoBehaviour {
 
 	void Start () {
 		if (!created) {
-			DontDestroyOnLoad (this);
 			created = true;
+			DontDestroyOnLoad (this.gameObject);
+			DontDestroyOnLoad(ToggleComm.gameObject.transform.parent.gameObject);
 			ToggleComm.isOn = false; // false at first
 			monThr = new Thread (new ThreadStart (FuncMonData));
 			monThr.Start ();
 		} else {
-			Destroy(this);
+			Destroy(this.gameObject);
+			Destroy(ToggleComm.gameObject.transform.parent.gameObject);
 		}
 	}
 	
