@@ -51,11 +51,11 @@ public class udpMonitorScript : MonoBehaviour {
 				// send to the other
 				if (fromIP.Equals(ipadr1)) {
 					client.Send(data, data.Length, ipadr2, port);
-					Debug.Log("from: " + ipadr1 + " to " + ipadr2);
+					Debug.Log("from: " + fromIP + " to " + ipadr2 + "(" + port.ToString() + ")");
 					Debug.Log(data.Length.ToString());
 				} else {
 					client.Send(data, data.Length, ipadr1, port);
-					Debug.Log("from: " + ipadr2 + " to " + ipadr1);
+					Debug.Log("from: " + fromIP + " to " + ipadr1 + "(" + port.ToString() + ")");
 					Debug.Log(data.Length.ToString());
 				}
 			}
