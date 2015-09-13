@@ -12,7 +12,7 @@ using System.Collections.Generic; // for Dictionary
 
 /* 
  * v0.5 2015/09/13
- *   - 
+ *   - add data export command (export,88555bd)
  * v0.4 2015/09/05
  *   - add delay feature
  * v0.3 2015/09/04
@@ -24,8 +24,13 @@ using System.Collections.Generic; // for Dictionary
  *   - fix UDP relay
  */ 
 
+
 public class udpMonitorScript : MonoBehaviour {
- 	Thread monThr = null; // monitor Thread
+	// data export command
+	//     88555bd: hash of v0.1 commit @ github
+	const string kExportCommand = "export,88555bd";
+
+	Thread monThr = null; // monitor Thread
 	static bool created = false;
 
 	public Toggle ToggleComm;
@@ -63,6 +68,39 @@ public class udpMonitorScript : MonoBehaviour {
 			+ ") to " + toIP + "(" + toPort.ToString() + ")"; 
 		Debug.Log (msg);
 	}
+	
+	private void exportData(ref UdpClient client, ref IPEndPoint anyIP) 
+	{
+		byte[] data;
+		string text;
+
+		int idx = 0;
+
+		text = "SOT"; // start of table
+		text = text + System.Environment.NewLine;
+		data = System.Text.Encoding.ASCII.GetBytes(text);
+		client.Send(data, data.Length, anyIP);
+
+		foreach (var commtime in list_comm_time) {
+			text = commtime.ToString("yyyy/MM/dd hh:mm:ss");
+			text = text + ",";
+			text = text + list_comm_string[idx];
+
+			// below comment out because text already includes <CR><LF>
+	//		text = text + System.Environment.NewLine;
+
+			data = System.Text.Encoding.ASCII.GetBytes (text);
+			client.Send (data, data.Length, anyIP);
+
+			idx++;
+		}
+
+		text = "EOT"; // start of table
+		text = text + System.Environment.NewLine;
+		data = System.Text.Encoding.ASCII.GetBytes(text);
+		client.Send(data, data.Length, anyIP);
+
+	}
 
 	void DoRelay() {
 		UdpClient client = new UdpClient (setPort);
@@ -80,6 +118,12 @@ public class udpMonitorScript : MonoBehaviour {
 					Thread.Sleep(20);
 					continue;
 				}
+
+				if (text.Contains(kExportCommand)) {
+					exportData(ref client, ref anyIP);
+					continue;
+				}
+
 				string fromIP = anyIP.Address.ToString();
 				int fromPort = anyIP.Port;
 
