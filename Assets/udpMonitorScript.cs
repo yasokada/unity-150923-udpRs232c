@@ -8,8 +8,11 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
+using System.Collections.Generic; // for Dictionary
 
 /* 
+ * v0.5 2015/09/13
+ *   - 
  * v0.4 2015/09/05
  *   - add delay feature
  * v0.3 2015/09/04
@@ -32,12 +35,19 @@ public class udpMonitorScript : MonoBehaviour {
 	private int setPort;
 	private int delay_msec;
 
+	private List<System.DateTime> list_comm_time;
+	private List<string> list_comm_string;
+	
 	void Start () {
 		if (!created) {
 			created = true;
 			DontDestroyOnLoad (this.gameObject);
 			DontDestroyOnLoad(ToggleComm.gameObject.transform.parent.gameObject);
 			ToggleComm.isOn = false; // false at first
+
+			list_comm_time = new List<System.DateTime>();
+			list_comm_string = new List<string>();
+
 			monThr = new Thread (new ThreadStart (FuncMonData));
 			monThr.Start ();
 		} else {
@@ -76,11 +86,18 @@ public class udpMonitorScript : MonoBehaviour {
 				// send to the other
 				if (fromIP.Equals(ipadr1)) {
 					portToReturn = fromPort; // store the port used in the "else" clause
+
+					list_comm_time.Add(System.DateTime.Now);
+					list_comm_string.Add("tx," + text);
+
 					client.Send(data, data.Length, ipadr2, setPort);
 					DebugPrintComm("1 ", fromIP, fromPort, ipadr2, setPort);
 				} else {
 					// delay before relay 
 					Thread.Sleep(delay_msec);
+
+					list_comm_time.Add(System.DateTime.Now);
+					list_comm_string.Add("rx," + text);
 
 					client.Send(data, data.Length, ipadr1, portToReturn);
 					DebugPrintComm("2 ", fromIP, fromPort, ipadr1, portToReturn);
