@@ -82,7 +82,7 @@ public class udpMonitorScript : MonoBehaviour {
 		client.Send(data, data.Length, anyIP);
 
 		foreach (var commtime in list_comm_time) {
-			text = commtime.ToString("yyyy/MM/dd hh:mm:ss");
+			text = commtime.ToString("yyyy/MM/dd HH:mm:ss");
 			text = text + ",";
 			text = text + list_comm_string[idx];
 
