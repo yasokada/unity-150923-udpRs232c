@@ -11,6 +11,7 @@ using System.Threading;
 using System.Collections.Generic; // for Dictionary
 
 /* 
+ * * ----------- UdpMonitor ==> udpRs232c ------------
  * v0.5 2015/09/13
  *   - add data export command (export,88555bd)
  * v0.4 2015/09/05
@@ -25,7 +26,7 @@ using System.Collections.Generic; // for Dictionary
  */ 
 
 
-public class udpMonitorScript : MonoBehaviour {
+public class udpRs232cScript : MonoBehaviour {
 	// data export command
 	//     88555bd: hash of v0.1 commit @ github
 	const string kExportCommand = "export,88555bd";
