@@ -159,7 +159,7 @@ public class udpRs232cScript : MonoBehaviour {
 				return returnType.FallThrough; // TODO: cotinue???
 			}
 		}
-		catch (Exception err) {
+		catch (System.Exception) {
 		}
 		udpString = "";
 		retPort = 0;
