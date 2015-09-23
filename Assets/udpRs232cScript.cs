@@ -10,7 +10,14 @@ using System.Threading;
 
 using System.Collections.Generic; // for Dictionary
 
+using System.IO.Ports; // for RS-232C
+using NS_MyRs232cUtil;
+
+// TODO: bug > thread is still running after finishing player mode
+
 /* 
+ * v0.6 2015/09/23
+ *   - add RS-232C connection
  * * ----------- UdpMonitor ==> udpRs232c ------------
  * v0.5 2015/09/13
  *   - add data export command (export,88555bd)
@@ -40,6 +47,9 @@ public class udpRs232cScript : MonoBehaviour {
 	private string ipadr2;
 	private int setPort;
 	private int delay_msec;
+
+	private SerialPort mySP;
+	private string acc232rcvd = "";
 
 	private List<System.DateTime> list_comm_time;
 	private List<string> list_comm_string;
@@ -103,6 +113,55 @@ public class udpRs232cScript : MonoBehaviour {
 
 	}
 
+	enum returnType {
+		Continue,
+		FallThrough,
+	};
+
+	private returnType udpToRs232c(ref UdpClient client, ref int portToReturn) {
+		try {
+			IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
+			byte[] data = client.Receive(ref anyIP);
+			string text = Encoding.ASCII.GetString(data);
+
+			if (text.Length == 0) {
+				Thread.Sleep(20);
+				return returnType.Continue; // continue;
+			}
+
+			if (text.Contains(kExportCommand)) {
+				exportData(ref client, ref anyIP);
+				return returnType.Continue; // continue;
+			}
+
+			string fromIP = anyIP.Address.ToString();
+			int fromPort = anyIP.Port;
+
+			// send to the other
+			if (fromIP.Equals(ipadr1)) {
+				portToReturn = fromPort; // store the port used in the "else" clause
+
+				list_comm_time.Add(System.DateTime.Now);
+				list_comm_string.Add("tx," + text);
+
+				client.Send(data, data.Length, ipadr2, setPort);
+				DebugPrintComm("1 ", fromIP, fromPort, ipadr2, setPort);
+			} else {
+				// delay before relay 
+				Thread.Sleep(delay_msec);
+
+				list_comm_time.Add(System.DateTime.Now);
+				list_comm_string.Add("rx," + text);
+
+				client.Send(data, data.Length, ipadr1, portToReturn);
+				DebugPrintComm("2 ", fromIP, fromPort, ipadr1, portToReturn);
+			}
+		}
+		catch (System.Exception) {
+		}
+		return returnType.FallThrough;
+	}
+
 	void DoRelay() {
 		UdpClient client = new UdpClient (setPort);
 		client.Client.ReceiveTimeout = 300; // msec
@@ -110,47 +169,11 @@ public class udpRs232cScript : MonoBehaviour {
 
 		int portToReturn = 31415; // is set dummy value at first
 		while (ToggleComm.isOn) {
-			try {
-				IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
-				byte[] data = client.Receive(ref anyIP);
-				string text = Encoding.ASCII.GetString(data);
-
-				if (text.Length == 0) {
-					Thread.Sleep(20);
-					continue;
-				}
-
-				if (text.Contains(kExportCommand)) {
-					exportData(ref client, ref anyIP);
-					continue;
-				}
-
-				string fromIP = anyIP.Address.ToString();
-				int fromPort = anyIP.Port;
-
-				// send to the other
-				if (fromIP.Equals(ipadr1)) {
-					portToReturn = fromPort; // store the port used in the "else" clause
-
-					list_comm_time.Add(System.DateTime.Now);
-					list_comm_string.Add("tx," + text);
-
-					client.Send(data, data.Length, ipadr2, setPort);
-					DebugPrintComm("1 ", fromIP, fromPort, ipadr2, setPort);
-				} else {
-					// delay before relay 
-					Thread.Sleep(delay_msec);
-
-					list_comm_time.Add(System.DateTime.Now);
-					list_comm_string.Add("rx," + text);
-
-					client.Send(data, data.Length, ipadr1, portToReturn);
-					DebugPrintComm("2 ", fromIP, fromPort, ipadr1, portToReturn);
-				}
+			returnType res1 = udpToRs232c(ref client, ref portToReturn);
+			if (res1.Equals(returnType.Continue)) {
+				continue;
 			}
-			catch (Exception err) {
 
-			}
 			// without this sleep, on android, the app will freeze at Unity splash screen
 			Thread.Sleep(200);
 		}
