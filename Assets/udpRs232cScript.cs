@@ -120,43 +120,28 @@ public class udpRs232cScript : MonoBehaviour {
 		FallThrough,
 	};
 
-	private returnType udpToRs232c(ref UdpClient client, ref int portToReturn,
-	                               ref SerialPort sp_) {
-//		s_commStatus = "debug:125";
-
-		// TODO: 
-//		if (sp_ == null || sp_.IsOpen == false) {
-//			return returnType.Continue;
-//		}
-
-//		s_commStatus = "debug:129";
-
+	private returnType handleUdp(ref UdpClient client, out string udpString) {
 		try {
 			IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
 			byte[] data = client.Receive(ref anyIP);
 			string text = Encoding.ASCII.GetString(data);
 
 			if (text.Length == 0) {
-//				Thread.Sleep(20);
+				udpString = "";
 				return returnType.Continue; // continue;
 			}
 
 			if (text.Contains(kExportCommand)) {
 				exportData(ref client, ref anyIP);
+				udpString = "";
 				return returnType.Continue; // continue;
 			}
 
 			string fromIP = anyIP.Address.ToString();
 			int fromPort = anyIP.Port;
 
-			s_commStatus = "debug:151";
-
-			// send to the other
+			// get incoming text
 			if (fromIP.Equals(ipadr1)) {
-				s_commStatus = "debug:153";
-
-				portToReturn = fromPort; // store the port used in the "else" clause
-
 				list_comm_time.Add(System.DateTime.Now);
 				list_comm_string.Add("tx," + text);
 
@@ -167,6 +152,9 @@ public class udpRs232cScript : MonoBehaviour {
 				client.Send(data, data.Length, ipadr1, fromPort); // TODO: remove
 
 				DebugPrintComm("1 ", fromIP, fromPort, ipadr2, setPort);
+
+				udpString = text;
+				return returnType.FallThrough; // TODO: cotinue???
 //			} else {
 //				// delay before relay 
 //				Thread.Sleep(delay_msec);
@@ -180,6 +168,7 @@ public class udpRs232cScript : MonoBehaviour {
 		}
 		catch (Exception err) {
 		}
+		udpString = "";
 		return returnType.FallThrough;
 	}
 
@@ -205,8 +194,9 @@ public class udpRs232cScript : MonoBehaviour {
 //		}
 
 		int portToReturn = 31415; // is set dummy value at first
+		string udpString = "";
 		while (ToggleComm.isOn) {
-			returnType res1 = udpToRs232c(ref client, ref portToReturn, ref mySP);
+			returnType res1 = handleUdp(ref client, out udpString);
 //			returnType res2 = rs232cToUdp();
 //			if (res1.Equals(returnType.Continue) 
 //			    && res2.Equals(returnType.Continue)) {
