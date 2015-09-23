@@ -153,15 +153,6 @@ public class udpRs232cScript : MonoBehaviour {
 
 				udpString = text;
 				return returnType.FallThrough; // TODO: cotinue???
-//			} else {
-//				// delay before relay 
-//				Thread.Sleep(delay_msec);
-//
-//				list_comm_time.Add(System.DateTime.Now);
-//				list_comm_string.Add("rx," + text);
-//
-//				client.Send(data, data.Length, ipadr1, portToReturn);
-//				DebugPrintComm("2 ", fromIP, fromPort, ipadr1, portToReturn);
 			}
 		}
 		catch (Exception err) {
@@ -172,6 +163,7 @@ public class udpRs232cScript : MonoBehaviour {
 	}
 
 	private returnType handleRs232c(ref SerialPort mySP, ref UdpClient client, string fromUdp, int fromPort){
+		// UDP to RS-232C
 		try {
 			if (fromUdp.Length > 0) {
 				mySP.Write (fromUdp);
@@ -180,26 +172,12 @@ public class udpRs232cScript : MonoBehaviour {
 		catch (System.Exception) {
 		}
 
-		byte rcv;
-		char tmp;
-		bool hasRcvd = false;
-		string text;
-		
+		// RS-232C to UDP
 		try {
-			rcv = (byte)mySP.ReadByte();
+			byte rcv = (byte)mySP.ReadByte();
 			if (rcv != 255) {
-				hasRcvd = true;
-				
-				tmp = (char)rcv;
-//				if (tmp != 0x0d && tmp != 0x0a) { // not CRLF
-//					accRcvd = accRcvd + tmp.ToString();
-//				}
-//				if (tmp == 0x0d) { // CR
-//					mySP.WriteLine(accRcvd);
-//					rcvdCRLF = true;
-//				}
-				text = tmp.ToString();
-				byte [] data = System.Text.Encoding.ASCII.GetBytes(text);
+				char tmp = (char)rcv;
+				byte [] data = System.Text.Encoding.ASCII.GetBytes(tmp.ToString());
 				client.Send(data, data.Length, ipadr1, fromPort);
 			}
 		} catch (System.Exception) {
@@ -218,12 +196,11 @@ public class udpRs232cScript : MonoBehaviour {
 		mySP.ReadTimeout = 1;
 
 		s_commStatus = ipadr2 + " open";
-		// TODO: uncomment after debug // HACKME: for TDD (using GameObject to ON/OFF)
-//		if (open232c == false) {
-//			s_commStatus = ipadr2 + " open fail";
-//			return false;
-//		}
-		mySP.Write(">");
+		if (open232c == false) {
+			s_commStatus = ipadr2 + " open fail";
+			return false;
+		}
+//		mySP.Write(">");
 
 		int portToReturn = 31415; // is set dummy value at first
 		string udpString = "";
