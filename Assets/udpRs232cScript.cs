@@ -120,12 +120,16 @@ public class udpRs232cScript : MonoBehaviour {
 		FallThrough,
 	};
 
-	private returnType handleUdp(ref UdpClient client, out string udpString) {
+	private returnType handleUdp(ref UdpClient client, out string udpString, out int retPort) {
 		try {
 			IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
 			byte[] data = client.Receive(ref anyIP);
 			string text = Encoding.ASCII.GetString(data);
 
+			string fromIP = anyIP.Address.ToString();
+			int fromPort = anyIP.Port;
+			retPort = fromPort;
+			
 			if (text.Length == 0) {
 				udpString = "";
 				return returnType.Continue; // continue;
@@ -137,19 +141,13 @@ public class udpRs232cScript : MonoBehaviour {
 				return returnType.Continue; // continue;
 			}
 
-			string fromIP = anyIP.Address.ToString();
-			int fromPort = anyIP.Port;
-
 			// get incoming text
 			if (fromIP.Equals(ipadr1)) {
 				list_comm_time.Add(System.DateTime.Now);
 				list_comm_string.Add("tx," + text);
 
-//				client.Send(data, data.Length, ipadr2, setPort);
-//				string txt = System.Text.Encoding.ASCII.GetString(data);
-//				sp_.WriteLine(txt);
-
-				client.Send(data, data.Length, ipadr1, fromPort); // TODO: remove
+				// echo back for test
+//				client.Send(data, data.Length, ipadr1, fromPort); // TODO: remove
 
 				DebugPrintComm("1 ", fromIP, fromPort, ipadr2, setPort);
 
@@ -169,18 +167,44 @@ public class udpRs232cScript : MonoBehaviour {
 		catch (Exception err) {
 		}
 		udpString = "";
+		retPort = 0;
 		return returnType.FallThrough;
 	}
 
-	private returnType handleRs232c(ref SerialPort mySP, string fromUdp){
-		if (fromUdp.Length  == 0) {
-			return returnType.Continue;
-		}
+	private returnType handleRs232c(ref SerialPort mySP, ref UdpClient client, string fromUdp, int fromPort){
 		try {
-			mySP.Write (fromUdp);
+			if (fromUdp.Length > 0) {
+				mySP.Write (fromUdp);
+			}
 		}
 		catch (System.Exception) {
 		}
+
+		byte rcv;
+		char tmp;
+		bool hasRcvd = false;
+		string text;
+		
+		try {
+			rcv = (byte)mySP.ReadByte();
+			if (rcv != 255) {
+				hasRcvd = true;
+				
+				tmp = (char)rcv;
+//				if (tmp != 0x0d && tmp != 0x0a) { // not CRLF
+//					accRcvd = accRcvd + tmp.ToString();
+//				}
+//				if (tmp == 0x0d) { // CR
+//					mySP.WriteLine(accRcvd);
+//					rcvdCRLF = true;
+//				}
+				text = tmp.ToString();
+				byte [] data = System.Text.Encoding.ASCII.GetBytes(text);
+				client.Send(data, data.Length, ipadr1, fromPort);
+			}
+		} catch (System.Exception) {
+		}
+
 		return returnType.Continue;
 	}
 
@@ -204,8 +228,12 @@ public class udpRs232cScript : MonoBehaviour {
 		int portToReturn = 31415; // is set dummy value at first
 		string udpString = "";
 		while (ToggleComm.isOn) {
-			returnType res1 = handleUdp(ref client, out udpString);
-			returnType res2 = handleRs232c(ref mySP, udpString);
+			int tmpPort = 0;
+			returnType res1 = handleUdp(ref client, out udpString, out tmpPort);
+			if (tmpPort > 0) {
+				portToReturn = tmpPort;
+			}
+			returnType res2 = handleRs232c(ref mySP, ref client, udpString, portToReturn);
 			if (res1.Equals(returnType.Continue) 
 			    && res2.Equals(returnType.Continue)) {
 				Thread.Sleep(20);
