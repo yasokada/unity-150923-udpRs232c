@@ -172,9 +172,17 @@ public class udpRs232cScript : MonoBehaviour {
 		return returnType.FallThrough;
 	}
 
-	private returnType rs232cToUdp(){
-		return returnType.Continue;
-	}
+//	private returnType handleRs232c(ref SerialPort mySP, string fromUdp){
+//		if (fromUdp.Length  == 0) {
+//			return returnType.Continue;
+//		}
+//		try {
+//			mySP.Write (fromUdp);
+//		}
+//		catch (System.Exception) {
+//		}
+//		return returnType.Continue;
+//	}
 
 
 	bool DoRelay() {
@@ -197,12 +205,19 @@ public class udpRs232cScript : MonoBehaviour {
 		string udpString = "";
 		while (ToggleComm.isOn) {
 			returnType res1 = handleUdp(ref client, out udpString);
-//			returnType res2 = rs232cToUdp();
+//			returnType res2 = handleRs232c(ref mySP, udpString);
 //			if (res1.Equals(returnType.Continue) 
 //			    && res2.Equals(returnType.Continue)) {
 //				Thread.Sleep(20);
 //				continue;
 //			}
+
+
+			if (udpString.Length > 0 && mySP != null && mySP.IsOpen) {
+				mySP.WriteLine(udpString);
+				s_commStatus = "send: " + udpString;
+			}
+
 			if (res1 == returnType.Continue) {
 				Thread.Sleep(20);
 				continue;
