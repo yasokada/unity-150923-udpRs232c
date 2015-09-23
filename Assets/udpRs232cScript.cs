@@ -125,7 +125,7 @@ public class udpRs232cScript : MonoBehaviour {
 			string text = Encoding.ASCII.GetString(data);
 
 			if (text.Length == 0) {
-				Thread.Sleep(20);
+//				Thread.Sleep(20);
 				return returnType.Continue; // continue;
 			}
 
@@ -162,15 +162,31 @@ public class udpRs232cScript : MonoBehaviour {
 		return returnType.FallThrough;
 	}
 
-	void DoRelay() {
+	private returnType rs232cToUdp(){
+		return returnType.Continue;
+	}
+
+
+	bool DoRelay() {
 		UdpClient client = new UdpClient (setPort);
 		client.Client.ReceiveTimeout = 300; // msec
 		client.Client.Blocking = false;
 
+		bool open232c = MyRs232cUtil.Open (ipadr2, out mySP);
+		mySP.ReadTimeout = 1;
+
+		// TODO: uncomment after debug // HACKME: for TDD (using GameObject to ON/OFF)
+//		if (open232c == false) {
+//			return false;
+//		}
+
 		int portToReturn = 31415; // is set dummy value at first
 		while (ToggleComm.isOn) {
 			returnType res1 = udpToRs232c(ref client, ref portToReturn);
-			if (res1.Equals(returnType.Continue)) {
+			returnType res2 = rs232cToUdp();
+			if (res1.Equals(returnType.Continue) 
+			    && res2.Equals(returnType.Continue)) {
+				Thread.Sleep(20);
 				continue;
 			}
 
@@ -178,6 +194,9 @@ public class udpRs232cScript : MonoBehaviour {
 			Thread.Sleep(200);
 		}
 		client.Close ();
+		MyRs232cUtil.Close (ref mySP);
+
+		return true;
 	}
 
 	private bool readSetting() {
@@ -200,7 +219,10 @@ public class udpRs232cScript : MonoBehaviour {
 			Debug.Log("read setting");
 			readSetting();
 			Debug.Log("monitor");
-			DoRelay();
+			bool resRelay = DoRelay();
+			if (resRelay == false) {
+				break; // COM port open fail etc.
+			}
 		}
 	}
 
