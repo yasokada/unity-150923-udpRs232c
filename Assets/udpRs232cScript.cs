@@ -17,7 +17,7 @@ using NS_MyRs232cUtil;
 
 /* 
  * v0.6 2015/09/23
- *   - add RS-232C connection
+ *   - add RS-232C connection (9600 8N1)
  * * ----------- UdpMonitor ==> udpRs232c ------------
  * v0.5 2015/09/13
  *   - add data export command (export,88555bd)
@@ -42,6 +42,8 @@ public class udpRs232cScript : MonoBehaviour {
 	static bool created = false;
 
 	public Toggle ToggleComm;
+	public Text T_commStatus;
+	private string s_commStatus = "";
 
 	private string ipadr1;
 	private string ipadr2;
@@ -118,7 +120,17 @@ public class udpRs232cScript : MonoBehaviour {
 		FallThrough,
 	};
 
-	private returnType udpToRs232c(ref UdpClient client, ref int portToReturn) {
+	private returnType udpToRs232c(ref UdpClient client, ref int portToReturn,
+	                               ref SerialPort sp_) {
+//		s_commStatus = "debug:125";
+
+		// TODO: 
+//		if (sp_ == null || sp_.IsOpen == false) {
+//			return returnType.Continue;
+//		}
+
+//		s_commStatus = "debug:129";
+
 		try {
 			IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
 			byte[] data = client.Receive(ref anyIP);
@@ -137,27 +149,36 @@ public class udpRs232cScript : MonoBehaviour {
 			string fromIP = anyIP.Address.ToString();
 			int fromPort = anyIP.Port;
 
+			s_commStatus = "debug:151";
+
 			// send to the other
 			if (fromIP.Equals(ipadr1)) {
+				s_commStatus = "debug:153";
+
 				portToReturn = fromPort; // store the port used in the "else" clause
 
 				list_comm_time.Add(System.DateTime.Now);
 				list_comm_string.Add("tx," + text);
 
-				client.Send(data, data.Length, ipadr2, setPort);
+//				client.Send(data, data.Length, ipadr2, setPort);
+//				string txt = System.Text.Encoding.ASCII.GetString(data);
+//				sp_.WriteLine(txt);
+
+				client.Send(data, data.Length, ipadr1, fromPort); // TODO: remove
+
 				DebugPrintComm("1 ", fromIP, fromPort, ipadr2, setPort);
-			} else {
-				// delay before relay 
-				Thread.Sleep(delay_msec);
-
-				list_comm_time.Add(System.DateTime.Now);
-				list_comm_string.Add("rx," + text);
-
-				client.Send(data, data.Length, ipadr1, portToReturn);
-				DebugPrintComm("2 ", fromIP, fromPort, ipadr1, portToReturn);
+//			} else {
+//				// delay before relay 
+//				Thread.Sleep(delay_msec);
+//
+//				list_comm_time.Add(System.DateTime.Now);
+//				list_comm_string.Add("rx," + text);
+//
+//				client.Send(data, data.Length, ipadr1, portToReturn);
+//				DebugPrintComm("2 ", fromIP, fromPort, ipadr1, portToReturn);
 			}
 		}
-		catch (System.Exception) {
+		catch (Exception err) {
 		}
 		return returnType.FallThrough;
 	}
@@ -174,18 +195,25 @@ public class udpRs232cScript : MonoBehaviour {
 
 		bool open232c = MyRs232cUtil.Open (ipadr2, out mySP);
 		mySP.ReadTimeout = 1;
+//		mySP.WriteLine(">");
 
+		s_commStatus = ipadr2 + " open";
 		// TODO: uncomment after debug // HACKME: for TDD (using GameObject to ON/OFF)
 //		if (open232c == false) {
+//			s_commStatus = ipadr2 + " open fail";
 //			return false;
 //		}
 
 		int portToReturn = 31415; // is set dummy value at first
 		while (ToggleComm.isOn) {
-			returnType res1 = udpToRs232c(ref client, ref portToReturn);
-			returnType res2 = rs232cToUdp();
-			if (res1.Equals(returnType.Continue) 
-			    && res2.Equals(returnType.Continue)) {
+			returnType res1 = udpToRs232c(ref client, ref portToReturn, ref mySP);
+//			returnType res2 = rs232cToUdp();
+//			if (res1.Equals(returnType.Continue) 
+//			    && res2.Equals(returnType.Continue)) {
+//				Thread.Sleep(20);
+//				continue;
+//			}
+			if (res1 == returnType.Continue) {
 				Thread.Sleep(20);
 				continue;
 			}
@@ -224,6 +252,10 @@ public class udpRs232cScript : MonoBehaviour {
 				break; // COM port open fail etc.
 			}
 		}
+	}
+
+	void Update() {
+		T_commStatus.text = s_commStatus;
 	}
 
 }
