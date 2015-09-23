@@ -17,7 +17,9 @@ using NS_MyRs232cUtil;
 
 /* 
  * v0.6 2015/09/23
- *   - add RS-232C connection (9600 8N1)
+ *   - can communicate between UDP and RS-232C (9600 8N1)
+ *      + 1. send from udp first (to obtain port number to return)
+ *      + 2. can send from RS-232C to udp
  * * ----------- UdpMonitor ==> udpRs232c ------------
  * v0.5 2015/09/13
  *   - add data export command (export,88555bd)
@@ -44,6 +46,8 @@ public class udpRs232cScript : MonoBehaviour {
 	public Toggle ToggleComm;
 	public Text T_commStatus;
 	private string s_commStatus = "";
+	public Text T_returnPort;
+	private int s_portToReturn = 0; // is set dummy value at first
 
 	private string ipadr1;
 	private string ipadr2;
@@ -202,15 +206,14 @@ public class udpRs232cScript : MonoBehaviour {
 		}
 //		mySP.Write(">");
 
-		int portToReturn = 31415; // is set dummy value at first
 		string udpString = "";
 		while (ToggleComm.isOn) {
 			int tmpPort = 0;
 			returnType res1 = handleUdp(ref client, out udpString, out tmpPort);
 			if (tmpPort > 0) {
-				portToReturn = tmpPort;
+				s_portToReturn = tmpPort;
 			}
-			returnType res2 = handleRs232c(ref mySP, ref client, udpString, portToReturn);
+			returnType res2 = handleRs232c(ref mySP, ref client, udpString, s_portToReturn);
 			if (res1.Equals(returnType.Continue) 
 			    && res2.Equals(returnType.Continue)) {
 				Thread.Sleep(20);
@@ -260,6 +263,7 @@ public class udpRs232cScript : MonoBehaviour {
 
 	void Update() {
 		T_commStatus.text = s_commStatus;
+		T_returnPort.text = s_portToReturn.ToString ();
 	}
 
 }
