@@ -16,6 +16,8 @@ using NS_MyRs232cUtil;
 // TODO: bug > thread is still running after finishing player mode
 
 /* 
+ * v0.6.1 2015/09/23
+ *   - performance tuning > sending from RS-232C is a bit faster now
  * v0.6 2015/09/23
  *   - can communicate between UDP and RS-232C (9600 8N1)
  *      + 1. send from udp first (to obtain port number to return)
