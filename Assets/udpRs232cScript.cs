@@ -172,17 +172,17 @@ public class udpRs232cScript : MonoBehaviour {
 		return returnType.FallThrough;
 	}
 
-//	private returnType handleRs232c(ref SerialPort mySP, string fromUdp){
-//		if (fromUdp.Length  == 0) {
-//			return returnType.Continue;
-//		}
-//		try {
-//			mySP.Write (fromUdp);
-//		}
-//		catch (System.Exception) {
-//		}
-//		return returnType.Continue;
-//	}
+	private returnType handleRs232c(ref SerialPort mySP, string fromUdp){
+		if (fromUdp.Length  == 0) {
+			return returnType.Continue;
+		}
+		try {
+			mySP.Write (fromUdp);
+		}
+		catch (System.Exception) {
+		}
+		return returnType.Continue;
+	}
 
 
 	bool DoRelay() {
@@ -192,7 +192,6 @@ public class udpRs232cScript : MonoBehaviour {
 
 		bool open232c = MyRs232cUtil.Open (ipadr2, out mySP);
 		mySP.ReadTimeout = 1;
-//		mySP.WriteLine(">");
 
 		s_commStatus = ipadr2 + " open";
 		// TODO: uncomment after debug // HACKME: for TDD (using GameObject to ON/OFF)
@@ -200,22 +199,17 @@ public class udpRs232cScript : MonoBehaviour {
 //			s_commStatus = ipadr2 + " open fail";
 //			return false;
 //		}
+		mySP.Write(">");
 
 		int portToReturn = 31415; // is set dummy value at first
 		string udpString = "";
 		while (ToggleComm.isOn) {
 			returnType res1 = handleUdp(ref client, out udpString);
-//			returnType res2 = handleRs232c(ref mySP, udpString);
-//			if (res1.Equals(returnType.Continue) 
-//			    && res2.Equals(returnType.Continue)) {
-//				Thread.Sleep(20);
-//				continue;
-//			}
-
-
-			if (udpString.Length > 0 && mySP != null && mySP.IsOpen) {
-				mySP.WriteLine(udpString);
-				s_commStatus = "send: " + udpString;
+			returnType res2 = handleRs232c(ref mySP, udpString);
+			if (res1.Equals(returnType.Continue) 
+			    && res2.Equals(returnType.Continue)) {
+				Thread.Sleep(20);
+				continue;
 			}
 
 			if (res1 == returnType.Continue) {
